@@ -13,11 +13,9 @@ var bodyList = new Array();
 initRenderer();
 initScene();
 initCamera();
-//initBoxMesh();
 initSphereMesh();
 initGroundMesh();
 initPhysWorld();
-//initBoxBody();
 initSphereBody();
 initGroundBody();
 //addContact();
@@ -183,23 +181,6 @@ window.addEventListener('resize', function() {
 });
 
 
-
-// document.addEventListener( 'mousedown', onDocumentMouseDown, false );
- 
- 
-// function onDocumentMouseDown( event ) {
-//     var x = event.clientX;//鼠标单击坐标X
-//     var y = event.clientY;//鼠标单击坐标Y
-//     // 屏幕坐标转标准设备坐标
-//     var x1 = ( x / window.innerWidth ) * 2 - 1;
-//     var y1 = -( y / window.innerHeight ) * 2 + 1;
-//     //标准设备坐标(z=0.5这个值并没有一个具体的说法)
-//     var stdVector = new THREE.Vector3(x1, y1, 0.5);
-//     var worldVector = stdVector.unproject(camera);
-//     initBoxMesh();
-//     initBoxBody(worldVector);
-// }
-
 const mouse = new THREE.Vector2();
 const intersectionPoint = new THREE.Vector3();
 const planeNormal = new THREE.Vector3();
@@ -213,14 +194,6 @@ window.addEventListener("click", function (e) {
     plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(plane, intersectionPoint);
-    // const sphereGeo = new THREE.SphereGeometry(0.125, 30, 30);
-    // const sphereMat = new THREE.MeshStandardMaterial({
-    //   color: 0xffea00,
-    //   metalness: 0,
-    //   roughness: 0
-    // });
-    // const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
-    // scene.add(sphereMesh);
     initBoxMesh(intersectionPoint);
     initBoxBody(intersectionPoint);
   });

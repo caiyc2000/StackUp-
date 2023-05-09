@@ -524,7 +524,7 @@ var _waternormalsJpg = require("../../static/images/waternormals.jpg");
 var _waternormalsJpgDefault = parcelHelpers.interopDefault(_waternormalsJpg);
 var renderer, scene, camera, orbit, physWorld;
 var sphereMesh, groundMesh;
-var water;
+var water, sky;
 var meshList = new Array();
 var boxPhysMat, groundPhysMat;
 var sphereBody, groundBody;
@@ -549,6 +549,7 @@ function initRenderer() {
 function initScene() {
     scene = new _three.Scene();
     initWater();
+    initSky();
 }
 function initCamera() {
     camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -562,7 +563,7 @@ function initCamera() {
 }
 function initWater() {
     waterGeometry = new _three.PlaneGeometry(10000, 10000);
-    const water1 = new _water.Water(waterGeometry, {
+    water = new _water.Water(waterGeometry, {
         textureWidth: 512,
         textureHeight: 512,
         waterNormals: new _three.TextureLoader().load(_waternormalsJpgDefault.default, (texture)=>{
@@ -574,8 +575,27 @@ function initWater() {
         distortionScale: 4,
         fog: scene.fog !== undefined
     });
-    water1.rotation.x = -Math.PI / 2;
-    scene.add(water1);
+    water.rotation.x = -Math.PI / 2;
+    scene.add(water);
+}
+function initSky() {
+    sky = new _sky.Sky();
+    sky.scale.setScalar(10000);
+    scene.add(sky);
+    const skyUniforms = sky.material.uniforms;
+    skyUniforms['turbidity'].value = 20;
+    skyUniforms['rayleigh'].value = 2;
+    skyUniforms['mieCoefficient'].value = 0.005;
+    skyUniforms['mieDirectionalG'].value = 0.8;
+    // sun
+    const sun = new _three.Vector3();
+    const pmremGenerator = new _three.PMREMGenerator(renderer);
+    const phi = _three.MathUtils.degToRad(88);
+    const theta = _three.MathUtils.degToRad(180);
+    sun.setFromSphericalCoords(1, phi, theta);
+    sky.material.uniforms['sunPosition'].value.copy(sun);
+    water.material.uniforms['sunDirection'].value.copy(sun).normalize();
+    scene.environment = pmremGenerator.fromScene(sky).texture;
 }
 function initBoxMesh() {
     //box mesh

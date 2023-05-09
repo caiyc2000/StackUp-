@@ -7,7 +7,7 @@ import waterTexture from '../../static/images/waternormals.jpg';
 
 var renderer, scene, camera, orbit, physWorld;
 var sphereMesh, groundMesh;
-var water;
+var water, sky;
 var meshList = new Array();
 var boxPhysMat, groundPhysMat;
 var sphereBody, groundBody;
@@ -35,6 +35,7 @@ function initRenderer(){
 function initScene(){
     scene = new THREE.Scene();
     initWater();
+    initSky();
 }
 
 function initCamera(){
@@ -59,7 +60,7 @@ function initCamera(){
 function initWater()
 {
     waterGeometry = new THREE.PlaneGeometry(10000, 10000);
-    const water = new Water(waterGeometry, {
+    water = new Water(waterGeometry, {
     textureWidth: 512,
     textureHeight: 512,
     waterNormals: new THREE.TextureLoader().load(waterTexture,  texture => {
@@ -73,6 +74,27 @@ function initWater()
     });
     water.rotation.x = - Math.PI / 2;
     scene.add(water);
+}
+
+function initSky()
+{
+    sky = new Sky();
+    sky.scale.setScalar(10000);
+    scene.add(sky);
+    const skyUniforms = sky.material.uniforms;
+    skyUniforms['turbidity'].value = 20;
+    skyUniforms['rayleigh'].value = 2;
+    skyUniforms['mieCoefficient'].value = 0.005;
+    skyUniforms['mieDirectionalG'].value = 0.8;
+    // sun
+    const sun = new THREE.Vector3();
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    const phi = THREE.MathUtils.degToRad(88);
+    const theta = THREE.MathUtils.degToRad(180);
+    sun.setFromSphericalCoords(1, phi, theta);
+    sky.material.uniforms['sunPosition'].value.copy(sun);
+    water.material.uniforms['sunDirection'].value.copy(sun).normalize();
+    scene.environment = pmremGenerator.fromScene(sky).texture;
 }
 
 function initBoxMesh(){

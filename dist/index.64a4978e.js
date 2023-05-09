@@ -548,18 +548,33 @@ function initRenderer() {
 }
 function initScene() {
     scene = new _three.Scene();
+    initLights();
     initWater();
     initSky();
 }
 function initCamera() {
-    camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // camera = new THREE.PerspectiveCamera(
+    //     45,
+    //     window.innerWidth / window.innerHeight,
+    //     0.1,
+    //     1000
+    // );
+    camera = new _three.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 20000);
     // Sets orbit control to move the camera around
     orbit = new _orbitControlsJs.OrbitControls(camera, renderer.domElement);
     // Camera positioning
-    camera.position.set(0, 20, -30);
+    //camera.position.set(0, 20, 30);
+    camera.position.set(0, 600, 1600);
     //rotating
-    orbit.autoRotate = true;
+    orbit.autoRotate = false;
     orbit.update();
+}
+function initLights() {
+    const directionalLight = new _three.DirectionalLight(16777215, 1); // 新建一个平行光源，颜色未白色，强度为1
+    directionalLight.position.set(0, 20, -200); // 将此平行光源调整到一个合适的位置
+    scene.add(directionalLight);
+    const ambientLight = new _three.AmbientLight(16777215, 0.1);
+    scene.add(ambientLight);
 }
 function initWater() {
     waterGeometry = new _three.PlaneGeometry(10000, 10000);
@@ -599,10 +614,14 @@ function initSky() {
 }
 function initBoxMesh() {
     //box mesh
-    const boxGeo = new _three.BoxGeometry(2, 2, 2);
-    const boxMat = new _three.MeshBasicMaterial({
-        color: 65280,
-        wireframe: true
+    const boxGeo = new _three.BoxGeometry(80, 80, 80);
+    // const boxMat = new THREE.MeshBasicMaterial({
+    //     color: 0x00ff00,
+    //     wireframe: true
+    // });
+    const boxMat = new _three.MeshLambertMaterial({
+        side: _three.DoubleSide,
+        color: 8421504
     });
     var boxMesh = new _three.Mesh(boxGeo, boxMat);
     scene.add(boxMesh);
@@ -654,7 +673,7 @@ function initBoxBody(worldVector) {
     //add box to physics world
     var boxBody = new _cannonEs.Body({
         mass: 1,
-        shape: new _cannonEs.Box(new _cannonEs.Vec3(1, 1, 1)),
+        shape: new _cannonEs.Box(new _cannonEs.Vec3(40, 40, 40)),
         position: new _cannonEs.Vec3(worldVector.x, worldVector.y, worldVector.z),
         material: boxPhysMat
     });

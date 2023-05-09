@@ -1,9 +1,13 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import * as CANNON from 'cannon-es';
+import { Water } from 'three/examples/jsm/objects/Water';
+import { Sky } from 'three/examples/jsm/objects/Sky';
+import waterTexture from '../../static/images/waternormals.jpg';
 
 var renderer, scene, camera, orbit, physWorld;
 var sphereMesh, groundMesh;
+var water;
 var meshList = new Array();
 var boxPhysMat, groundPhysMat;
 var sphereBody, groundBody;
@@ -13,10 +17,10 @@ var bodyList = new Array();
 initRenderer();
 initScene();
 initCamera();
-initSphereMesh();
+//initSphereMesh();
 initGroundMesh();
 initPhysWorld();
-initSphereBody();
+//initSphereBody();
 initGroundBody();
 //addContact();
 renderer.setAnimationLoop(animate);
@@ -25,13 +29,12 @@ renderer.setAnimationLoop(animate);
 function initRenderer(){
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(window.innerWidth, window.innerHeight);
-    // Sets the color of the background
-    //renderer.setClearColor(0xFEFEFE);
     document.body.appendChild(renderer.domElement);
 }
 
 function initScene(){
     scene = new THREE.Scene();
+    initWater();
 }
 
 function initCamera(){
@@ -50,6 +53,26 @@ function initCamera(){
     orbit.autoRotate = true; 
 
     orbit.update();
+}
+
+
+function initWater()
+{
+    waterGeometry = new THREE.PlaneGeometry(10000, 10000);
+    const water = new Water(waterGeometry, {
+    textureWidth: 512,
+    textureHeight: 512,
+    waterNormals: new THREE.TextureLoader().load(waterTexture,  texture => {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    }),
+    sunDirection: new THREE.Vector3(),
+    sunColor: 0xffffff,
+    waterColor: 0x0072ff,
+    distortionScale: 4,
+    fog: scene.fog !== undefined
+    });
+    water.rotation.x = - Math.PI / 2;
+    scene.add(water);
 }
 
 function initBoxMesh(){
@@ -116,7 +139,6 @@ function initBoxBody(worldVector){
     var boxBody = new CANNON.Body({
         mass: 1,
         shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
-        //position: new CANNON.Vec3(1, 20, 0),
         position: new CANNON.Vec3(worldVector.x, worldVector.y, worldVector.z),
         material: boxPhysMat
     });
@@ -164,9 +186,9 @@ function animate() {
         boxMesh.position.copy(boxBody.position);
         boxMesh.quaternion.copy(boxBody.quaternion);
     }
-    //update the sphere
-    sphereMesh.position.copy(sphereBody.position);
-    sphereMesh.quaternion.copy(sphereBody.quaternion);
+    // //update the sphere
+    // sphereMesh.position.copy(sphereBody.position);
+    // sphereMesh.quaternion.copy(sphereBody.quaternion);
 
     orbit.update();
 

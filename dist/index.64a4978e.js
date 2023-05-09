@@ -550,7 +550,7 @@ function initScene() {
     scene = new _three.Scene();
     initLights();
     initWater();
-    initSky();
+//initSky();
 }
 function initCamera() {
     // camera = new THREE.PerspectiveCamera(
@@ -570,10 +570,10 @@ function initCamera() {
     orbit.update();
 }
 function initLights() {
-    const directionalLight = new _three.DirectionalLight(16777215, 1); // 新建一个平行光源，颜色未白色，强度为1
+    const directionalLight = new _three.DirectionalLight(2097151, 5); // 新建一个平行光源，颜色未白色，强度为1
     directionalLight.position.set(0, 20, -200); // 将此平行光源调整到一个合适的位置
     scene.add(directionalLight);
-    const ambientLight = new _three.AmbientLight(16777215, 0.1);
+    const ambientLight = new _three.AmbientLight(16777215, 1);
     scene.add(ambientLight);
 }
 function initWater() {
@@ -621,7 +621,8 @@ function initBoxMesh() {
     // });
     const boxMat = new _three.MeshLambertMaterial({
         side: _three.DoubleSide,
-        color: 8421504
+        color: 16777215 * Math.random(),
+        reflectivity: 0.5
     });
     var boxMesh = new _three.Mesh(boxGeo, boxMat);
     scene.add(boxMesh);
@@ -701,6 +702,7 @@ function initSphereBody() {
 //animate
 function animate() {
     const timeStep = 1 / 60;
+    water.material.uniforms['time'].value += 1 / 60;
     physWorld.step(timeStep);
     //update the plane
     groundMesh.position.copy(groundBody.position);

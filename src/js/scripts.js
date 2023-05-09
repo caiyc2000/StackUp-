@@ -141,7 +141,7 @@ function initSphereMesh(){
 function initPhysWorld(){
     //physics world
     physWorld = new CANNON.World({
-        gravity: new CANNON.Vec3(0, -9.81, 0)
+        gravity: new CANNON.Vec3(0, -98.1, 0)
     });
 }
 
@@ -184,8 +184,8 @@ function initBoxBody(worldVector){
     });
     physWorld.addBody(boxBody);
 
-    boxBody.angularVelocity.set(0, 10, 0);
-    boxBody.angularDamping = 0.5;
+    boxBody.angularVelocity.set(1, 1, 1);
+    boxBody.angularDamping = 0.2;
 
     bodyList.push(boxBody);
 }

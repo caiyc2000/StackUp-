@@ -631,6 +631,8 @@ function initGroundMesh() {
     const groundMat = new _three.MeshBasicMaterial({
         color: 16777215,
         side: _three.DoubleSide,
+        transparent: true,
+        opacity: 0,
         wireframe: true
     });
     groundMesh = new _three.Mesh(groundGeo, groundMat);

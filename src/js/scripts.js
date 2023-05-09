@@ -4,6 +4,10 @@ import * as CANNON from 'cannon-es';
 import { Water } from 'three/examples/jsm/objects/Water';
 import { Sky } from 'three/examples/jsm/objects/Sky';
 import waterTexture from '../../static/images/waternormals.jpg';
+import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare.js';
+import lensflareTexture0 from '../../static/images/lensflare0.png';
+import lensflareTexture1 from '../../static/images/lensflare1.png';
+
 
 var renderer, scene, camera, orbit, physWorld;
 var sphereMesh, groundMesh;
@@ -36,7 +40,7 @@ function initScene(){
     scene = new THREE.Scene();
     initLights();
     initWater();
-    //initSky();
+    initSky();
 }
 
 function initCamera(){
@@ -54,16 +58,28 @@ function initCamera(){
     //camera.position.set(0, 20, 30);
     camera.position.set(0, 600, 1600);
     //rotating
-    orbit.autoRotate = false; 
+    orbit.autoRotate = true; 
 
     orbit.update();
 }
 
 function initLights()
 {
-    const directionalLight = new THREE.DirectionalLight(0x1fffff, 5); // 新建一个平行光源，颜色未白色，强度为1
-    directionalLight.position.set(0, 20, -200); // 将此平行光源调整到一个合适的位置
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 5); 
+    directionalLight.position.set(0, 20, -200); 
     scene.add(directionalLight);
+    //add lensflare
+    const textureLoader = new THREE.TextureLoader();
+    const textureFlare0 = textureLoader.load(lensflareTexture0);
+    const textureFlare1 = textureLoader.load(lensflareTexture1);
+    const lensflare = new Lensflare();
+    lensflare.addElement(new LensflareElement(textureFlare0, 600, 0, directionalLight.color));
+    lensflare.addElement(new LensflareElement(textureFlare1, 60, .6));
+    lensflare.addElement(new LensflareElement(textureFlare1, 70, .7));
+    lensflare.addElement(new LensflareElement(textureFlare1, 120, .9));
+    lensflare.addElement(new LensflareElement(textureFlare1, 70, 1));
+    directionalLight.add(lensflare);
+
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
 }
@@ -116,11 +132,14 @@ function initBoxMesh(){
     //     color: 0x00ff00,
     //     wireframe: true
     // });
-    const boxMat = new THREE.MeshLambertMaterial({
-        side: THREE.DoubleSide,  
-        color: 0xFFFFFF*Math.random(), 
-        reflectivity: 0.5
-      });
+    // const boxMat = new THREE.MeshLambertMaterial({
+    //     side: THREE.DoubleSide,  
+    //     color: 0xFFFFFF*Math.random(), 
+    //     reflectivity: 0.5
+    //   });
+    const boxMat = new THREE.MeshPhongMaterial({
+        color: 0xFFFFFF*Math.random()
+    });
     var boxMesh = new THREE.Mesh(boxGeo, boxMat);
     scene.add(boxMesh);
     meshList.push(boxMesh);
